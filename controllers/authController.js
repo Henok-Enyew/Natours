@@ -15,7 +15,7 @@ const signToken = (id) => {
 const createSendToken = (user, statusCode, res) => {
   console.log(user._id);
   const token = signToken(user._id);
-
+  res.cookies('jwt', token);
   return res.status(statusCode).json({
     status: 'success',
     token,
