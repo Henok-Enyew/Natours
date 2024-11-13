@@ -12,6 +12,8 @@ const globalErrorHandler = require(`./controllers/errorController`);
 
 const userRouter = require(`./routes/userRoutes`);
 const tourRouter = require(`./routes/tourRoutes`);
+const reviewRouter = require(`./routes/reviewRoutes`);
+
 const { whitelist } = require('validator');
 
 const app = express();
@@ -28,7 +30,7 @@ if (process.env.NODE_ENV == 'development') {
 
 // Limit requests from the same API
 const limiter = rateLimit({
-  max: 3,
+  max: 100,
   windowMs: 60 * 60 * 1000,
   message: 'To many request from this ip please try again in an hour.',
 });
@@ -61,6 +63,7 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
   // const err = new Error(`Can't find ${req.originalUrl} on this server!`);
@@ -72,23 +75,3 @@ app.all('*', (req, res, next) => {
 
 app.use(globalErrorHandler);
 module.exports = app;
-
-// app.use((req, res, next) => {
-//   console.log('Hello form the middleware');
-//   next();
-// });
-// app.use((req, res, next) => {
-//   req.requestedTime = new Date().toISOString();
-//   console.log(req.requestedTime);
-//   next();
-// });
-
-// app.get('/', (req, res) => {
-//   res.send('Hello mother fucker');
-// });
-
-// app.post('/', (req, res) => {
-//   res.send('You can post but fuck u tho');
-// });
-
-// Tours

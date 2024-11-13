@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const slugify = require('slugify');
+// const User = require('./userModel');
 
 const tourSchema = new mongoose.Schema(
   {
@@ -13,7 +14,7 @@ const tourSchema = new mongoose.Schema(
         'A tour name must have less than or equal to 40 characters',
       ],
       minlength: [
-        40,
+        10,
         'A tour name must have more than or equal to 10 characters',
       ],
     },
@@ -74,6 +75,36 @@ const tourSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    startLocation: {
+      // GEOJSON
+      type: {
+        type: String,
+        default: 'Point',
+        enum: ['Point'],
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: 'Point',
+          enum: ['Point'],
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   {
     toJSON: { virtuals: true },
@@ -90,7 +121,23 @@ tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
   next();
 });
+
+// ////// EMBEDDING USERS
+// tourSchema.pre('save', async function (next) {
+//   const guidesPromises = this.guides.map(async (id) => await User.findById(id));
+//   this.guides = await Promise.all(guidesPromises);
+//   next();
+// });
 // QUERY MIDDLEWARE
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangedAt',
+  });
+
+  next();
+});
+
 tourSchema.pre(/^find/, function (next) {
   // this.slug = slugify(this.name, { lower: true });
   this.find({ secretTour: { $ne: true } });
