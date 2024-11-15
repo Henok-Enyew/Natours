@@ -1,68 +1,16 @@
-const AppError = require('../utils/AppError');
-const catchAsync = require('../utils/catchAsync');
+// const AppError = require('../utils/AppError');
+// const catchAsync = require('../utils/catchAsync');
 const Review = require('./../models/reviewModel');
+const factory = require('./handleFactory');
 
-exports.createReview = catchAsync(async (req, res, next) => {
-  const newReview = await Review.create(req.body);
+exports.setTourUserIds = (req, res, next) => {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user.id;
+  next();
+};
 
-  res.status(201).json({
-    status: 'success',
-    data: {
-      review: newReview,
-    },
-  });
-});
-
-exports.getReview = catchAsync(async (req, res, next) => {
-  const review = await Review.findById(req.params.id);
-  if (!review) {
-    return next(new AppError('No review found with that id', 404));
-  }
-  res.status(201).json({
-    status: 'success',
-    data: {
-      review,
-    },
-  });
-});
-
-exports.getAllReviews = catchAsync(async (req, res, next) => {
-  const reviews = await Review.find();
-
-  res.status(201).json({
-    status: 'success',
-    results: reviews.length,
-    data: {
-      reviews,
-    },
-  });
-});
-
-exports.updateReview = catchAsync(async (req, res, next) => {
-  const review = await Review.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!review) {
-    return next(new AppError('No review found with that id', 404));
-  }
-  res.status(201).json({
-    status: 'success',
-    data: {
-      review,
-    },
-  });
-});
-
-exports.deleteReview = catchAsync(async (req, res, next) => {
-  const review = await Review.findByIdAndDelete(req.params.id);
-
-  if (!review) {
-    return next(new AppError('No review found with that id', 404));
-  }
-  res.status(201).json({
-    status: 'success',
-    data: null,
-  });
-});
+exports.createReview = factory.createOne(Review);
+exports.deleteReview = factory.deleteOne(Review);
+exports.getReview = factory.getOne(Review);
+exports.getAllReviews = factory.getAll(Review);
+exports.updateReview = factory.updateOne(Review);

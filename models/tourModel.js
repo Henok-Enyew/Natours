@@ -111,9 +111,17 @@ const tourSchema = new mongoose.Schema(
     toObject: { virtuals: true },
   },
 );
+tourSchema.index({ price: 1, ratingAverage: 1 });
+tourSchema.index({ slug: 1 });
 
 tourSchema.virtual('durationWeeks').get(function () {
   return this.duration / 7;
+});
+
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  foreignField: 'tour',
+  localField: '_id',
 });
 
 // DOCUMENT MIDDLEWARE

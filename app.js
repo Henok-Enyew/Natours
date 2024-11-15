@@ -14,8 +14,6 @@ const userRouter = require(`./routes/userRoutes`);
 const tourRouter = require(`./routes/tourRoutes`);
 const reviewRouter = require(`./routes/reviewRoutes`);
 
-const { whitelist } = require('validator');
-
 const app = express();
 
 // 1.GLOBAL MIDDLEWARES
@@ -66,10 +64,6 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
 
 app.all('*', (req, res, next) => {
-  // const err = new Error(`Can't find ${req.originalUrl} on this server!`);
-  // err.status = 'fail';
-  // err.statusCode = 404;
-
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 

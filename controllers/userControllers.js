@@ -2,6 +2,7 @@ const APIFeatures = require(`./../utils/apiFeature`);
 const catchAsync = require(`../utils/catchAsync`);
 const AppError = require(`../utils/AppError`);
 const User = require('./../models/userModel');
+const factory = require('./handleFactory');
 // const users = JSON.parse(
 //   fs.readFileSync(`${__dirname}/../dev-data/data/users.json`, 'utf-8')
 // );
@@ -52,40 +53,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const features = new APIFeatures(User.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .pagination();
-  const users = await features.query;
-  res.status(200).json({
-    status: 'success',
-    numUsers: users.length,
-    data: {
-      users,
-    },
-  });
-});
-
-exports.getUser = (req, res) => {
-  const id = req.params.id;
-  const user = users[id];
-
-  if (!user)
-    res.status(404).json({
-      status: 'fail',
-      message: 'user not found',
-    });
-
-  res.status(200).json({
-    status: 'success',
-    data: {
-      user,
-    },
-  });
-};
-
 exports.createUser = (req, res) => {
   res.status(201).json({
     status: 'success',
@@ -93,30 +60,12 @@ exports.createUser = (req, res) => {
   });
 };
 
-exports.updateUser = (req, res) => {
-  if (req.params.id * 1 >= users.length) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'invalid id',
-    });
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: {},
-  });
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user.id;
+  next();
 };
 
-exports.deleteUser = (req, res) => {
-  if (req.params.id * 1 >= users.length) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'invalid id',
-    });
-  }
-
-  res.status(200).json({
-    status: 'success',
-    data: null,
-  });
-};
+exports.getAllUsers = factory.getAll(User);
+exports.getUser = factory.getOne(User);
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
