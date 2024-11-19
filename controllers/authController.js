@@ -8,7 +8,7 @@ const { promisify } = require('util');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+    // expiresIn: process.env.JWT_EXPIRE,
   });
 };
 
@@ -73,6 +73,8 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(
@@ -83,7 +85,6 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
   // // 3> Checj if the user still exsits
   const freshUser = await User.findById(decoded.id);
-  console.log(freshUser);
   if (!freshUser) {
     return next(
       new AppError(
@@ -102,8 +103,46 @@ exports.protect = catchAsync(async (req, res, next) => {
   }
   // GRANT ACCESS TO PROTECTED ROUTE
   req.user = freshUser;
+  res.locals.user = freshUser;
   next();
 });
+
+exports.logout = (req, res) => {
+  res.cookie('jwt', 'loggedout', {
+    expiresIn: new Date(Date.now() * 10 * 1000),
+    httpOnly: true,
+  });
+
+  res.status(201).json({ status: 'Success' });
+};
+// Ther will be no errors this is only for rendered pages
+exports.isLoggedIn = async (req, res, next) => {
+  if (req.cookies.jwt) {
+    try {
+      const decoded = await promisify(jwt.verify)(
+        req.cookies.jwt,
+        process.env.JWT_SECRET,
+      );
+      // // 3> Checj if the user still exsits
+      const freshUser = await User.findById(decoded.id);
+      if (!freshUser) {
+        return next();
+      }
+
+      // // 4. Check if user chaged password after token was issued
+      if (freshUser.changedPasswordAfter(decoded.iat)) {
+        return next();
+      }
+      // GRANT ACCESS TO PROTECTED ROUTE
+
+      res.locals.user = freshUser;
+      return next();
+    } catch (err) {
+      return next();
+    }
+  }
+  next();
+};
 
 exports.restrictTo = (...roles) => {
   return (req, res, next) => {
@@ -192,11 +231,11 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1. Get user from collection
-  const currentPassword = req.body.currentPassword;
+  const currentPassword = req.body.passwordCurrent;
   const password = req.body.password;
   const passwordConfirm = req.body.passwordConfirm;
   const user = await User.findById(req.user.id).select('+password');
-  console.log('user: ' + req.user);
+  // console.log('user: ' + req.user);
   // 2.Check if posted current password is correct
   if (!user || !(await user.correctPassword(currentPassword, user.password))) {
     return next(new AppError('The current password is not correct.', 401));

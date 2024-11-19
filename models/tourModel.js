@@ -18,6 +18,7 @@ const tourSchema = new mongoose.Schema(
         'A tour name must have more than or equal to 10 characters',
       ],
     },
+    slug: String,
     duration: {
       type: Number,
       required: [true, 'A tour must have a duration'],
@@ -129,6 +130,7 @@ tourSchema.virtual('reviews', {
 // DOCUMENT MIDDLEWARE
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
+
   next();
 });
 
@@ -148,11 +150,11 @@ tourSchema.pre(/^find/, function (next) {
   next();
 });
 
-tourSchema.pre(/^find/, function (next) {
-  // this.slug = slugify(this.name, { lower: true });
-  this.find({ secretTour: { $ne: true } });
-  next();
-});
+// tourSchema.pre(/^find/, function (next) {
+//   this.slug = slugify(this.name, { lower: true });
+//   this.find({ secretTour: { $ne: true } });
+//   next();
+// });
 
 /////  BECAUSE THIS WILL MAKE THE GEO SPATIAL AGGREGATION SECOND
 // tourSchema.pre('aggregate', function (next) {

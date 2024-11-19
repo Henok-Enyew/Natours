@@ -519,6 +519,7 @@ body {
   margin-top: calc(0px - var(--section-rotate));
   position: relative;
   z-index: 1000;
+  margin-bottom: 32px;
 }
 
 .picture-box__img {
