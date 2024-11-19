@@ -28,7 +28,7 @@ app.use(helmet());
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'"], // Default for other resources
+      defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'",
         'https://cdnjs.cloudflare.com',
@@ -37,10 +37,10 @@ app.use(
       ],
       connectSrc: [
         "'self'",
-        'ws://*', // Allows all ws connections (non-secure)
-        'wss://*', // Allows all wss connections (secure)
-        'https://js.stripe.com', // Allow Stripe
-        'wss://natours-2-shoq.onrender.com:4066', // Specific WebSocket server
+        'ws://*',
+        'wss://*',
+        'https://js.stripe.com',
+        'wss://natours-2-shoq.onrender.com:4066',
         'ws://127.0.0.1:*',
       ],
       frameSrc: [
