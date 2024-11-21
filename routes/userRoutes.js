@@ -13,7 +13,13 @@ router.route('/resetPassword/:token').patch(authController.resetPassword);
 //protectall routes after this
 router.use(authController.protect);
 router.route('/updateMyPassword').patch(authController.updatePassword);
-router.route('/updateMe').patch(controllers.updateMe);
+router
+  .route('/updateMe')
+  .patch(
+    controllers.uploadUserPhoto,
+    controllers.resizeUserPhoto,
+    controllers.updateMe,
+  );
 router.route('/deleteMe').delete(controllers.deleteMe);
 router.get('/me', controllers.getMe, controllers.getUser);
 
