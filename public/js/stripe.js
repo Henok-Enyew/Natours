@@ -8,6 +8,10 @@ export const bookTour = async (tourId) => {
   try {
     // 1 Get checkout session from API
     const session = await axios(`/api/v1/booking/checkout-session/${tourId}`);
+    if (process.env.NODE_ENV === 'production')
+      session = await axios(
+        `https://natours-sbd8.onrender.com/api/v1/booking/checkout-session/${tourId}`,
+      );
     console.log(session);
     //2 create checkout form and charge credit card
     await stripe.redirectToCheckout({
