@@ -30,17 +30,6 @@ mongoose
     console.log('Database connected succesfully');
   });
 
-// // 5185401
-// const testTour = new Tour({
-//   name: 'The forest Hiker',
-//   rating: 4.7,
-//   price: 498,
-// });
-// testTour
-//   .save()
-//   .then((doc) => console.log(doc))
-//   .catch((err) => console.log('Error ' + err));
-
 const port = process.env.PORT || 3000;
 const server = app.listen(port, () => {
   console.log(`App running on port ${port}`);
