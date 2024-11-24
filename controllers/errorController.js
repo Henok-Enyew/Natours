@@ -70,7 +70,7 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
-    console.log(err.message);
+    // console.log(err.message);
     error.message = err.message;
     if (error.name === 'CastError') error = handeleCastErrorDB(error);
     if (error.code === 11000) error = handeleDuplicateFieldsDB(error);

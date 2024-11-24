@@ -27,7 +27,7 @@ mongoose
     // useFindAndModify: false,
   })
   .then((con) => {
-    console.log('The bluetooth device connected succesfully');
+    console.log('Database connected succesfully');
   });
 
 // // 5185401

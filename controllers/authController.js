@@ -13,7 +13,6 @@ const signToken = (id) => {
 };
 
 const createSendToken = (user, statusCode, res) => {
-  console.log(user._id);
   const token = signToken(user._id);
 
   const cookieOptions = {
@@ -47,7 +46,6 @@ exports.signup = catchAsync(async (req, res) => {
   });
 
   const url = `${req.protocol}://${req.get('host')}/me`;
-  console.log(url);
 
   await new Email(newUser, url).sendWelcome();
   createSendToken(newUser, 201, res);
@@ -62,7 +60,7 @@ exports.login = catchAsync(async (req, res, next) => {
   }
   // 2.Check if user exists and password is correct
   const user = await User.findOne({ email }).select('+password');
-  console.log(email, password);
+  // console.log(email, password);
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
@@ -100,7 +98,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   // // 4. Check if user chaged password after token was issued
   if (freshUser.changedPasswordAfter(decoded.iat)) {
-    console.log('The end');
     return next(
       new AppError('User recently changed password! Please login again ', 401),
     );
@@ -165,7 +162,6 @@ exports.restrictTo = (...roles) => {
 exports.forgotPassword = catchAsync(async (req, res, next) => {
   // GET user based on posted email
   const user = await User.findOne({ email: req.body.email });
-  console.log(req.body.email);
   if (!user) {
     return next(new AppError('There is no user with that email address!', 404));
   }
@@ -206,7 +202,6 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     passwordResetToken: hashedToken,
     passwordResetExpires: { $gt: Date.now() },
   });
-  console.log(req.params);
   // 2.If token not expired,and there is a user, set new password
   if (!user) {
     return next(new AppError('Token is invalid or expired', 400));

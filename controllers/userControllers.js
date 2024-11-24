@@ -30,7 +30,6 @@ const upload = multer({ storage: multerStorage, fileFilter: multerFilter });
 exports.uploadUserPhoto = upload.single('photo');
 
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
-  console.log('NOT LIKE US');
   if (!req.file) return next();
 
   req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
@@ -56,7 +55,6 @@ const filterObj = (obj, ...allowedFields) => {
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   //1.Create error if user post password
-  console.log(req.file.filename);
   // console.log(req.body);
   if (req.body.password || req.body.passwordConfirm) {
     return next(
