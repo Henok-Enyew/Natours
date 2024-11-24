@@ -1,6 +1,7 @@
 node_modules/
 *.env
 config.env
+.cache/
 logs/
 *.log
 npm-debug.log*
