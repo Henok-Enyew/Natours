@@ -17,7 +17,7 @@ const DB = process.env.DATABASE.replace(
 const DB_LOCAL = process.env.DATABASE_LOCAL;
 
 mongoose
-  .connect(DB_LOCAL, {
+  .connect(DB, {
     useNewUrlParser: true,
     useCreateIndex: true,
     useFindAndModify: false,
@@ -35,9 +35,9 @@ const reviews = JSON.parse(
 );
 async function importData() {
   try {
-    // await Tour.create(tours);
+    await Tour.create(tours);
     await User.create(users, { validateBeforeSave: false });
-    // await Review.create(reviews);
+    await Review.create(reviews);
     console.log('Succesfully inserted data');
   } catch (err) {
     console.log(err.message);
@@ -46,9 +46,9 @@ async function importData() {
 }
 async function deleteData() {
   try {
-    // await Tour.deleteMany();
+    await Tour.deleteMany();
     await User.deleteMany();
-    // await Review.deleteMany();
+    await Review.deleteMany();
     console.log('Succesfully deleted data');
   } catch (err) {
     console.log(err.message);
