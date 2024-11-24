@@ -4,6 +4,43 @@ const Booking = require(`./../models/booingModel`);
 const catchAsync = require(`../utils/catchAsync`);
 const AppError = require(`../utils/AppError`);
 const factory = require('./handleFactory');
+const { default: axios } = require('axios');
+
+exports.getCheckoutSessionChapa = catchAsync(async (req, res, next) => {
+  const tour = await Tour.findById(req.params.tourId);
+  console.log(req.user);
+  const options = {
+    method: 'POST',
+    url: 'https://api.chapa.co/v1/transaction/initialize',
+    headers: {
+      Authorization: `Bearer ${process.env.CHAPA_SECRET_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    data: {
+      amount: `${tour.price}`,
+      currency: 'ETB',
+      email: req.user.email,
+      first_name: req.user.name.split(' ')[0],
+      last_name: req.user.name.split(' ')[1],
+      phone_number: '0904927815',
+      tx_ref: `tx-${Date.now()}`, // Unique transaction reference
+      callback_url: 'https://127.0.0.1:8035',
+      return_url: 'http://127.0.0.1:8035',
+      'customization[title]': 'Natours',
+      'customization[description]': tour.summary,
+    },
+  };
+  try {
+    const session = await axios(options);
+    // console.log(session);
+    res.status(200).json({
+      status: 'success',
+      session: session.data.data,
+    });
+  } catch (err) {
+    console.error(err);
+  }
+});
 
 exports.getCheckoutSession = catchAsync(async (req, res, next) => {
   // Get the currently booked tour

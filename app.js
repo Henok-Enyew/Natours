@@ -3,6 +3,7 @@ const path = require('path');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const express = require('express');
@@ -19,6 +20,7 @@ const bookingRouter = require(`./routes/bookingRoutes`);
 const viewRouter = require(`./routes/viewRoutes`);
 
 const app = express();
+app.use(cors());
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
 // 1.GLOBAL MIDDLEWARES

@@ -4,7 +4,7 @@ import '@babel/polyfill';
 import { login, logout } from './login.js';
 import { signup } from './signup.js';
 import { updateSettings } from './updateSettings.js';
-import { bookTour } from './stripe.js';
+import { bookTour } from './chapa.js';
 
 // DOM ELEMENTS
 // const mapBox = document.getElementById('map');
