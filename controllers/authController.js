@@ -5,6 +5,7 @@ const catchAsync = require(`../utils/catchAsync`);
 const AppError = require('../utils/AppError');
 const Email = require('../utils/email');
 const { promisify } = require('util');
+// const Tour = require('../models/tourModel');
 
 const signToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -36,6 +37,50 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
+// const createVerificationToken = (userId) => {
+//   return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
+//     expiresIn: '24h', // Token valid for 24 hours
+//   });
+// };
+
+// To make sure the user is verfied
+exports.protectVerified = catchAsync(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  console.log(user.isVerified);
+  if (!user.isVerified) {
+    return next(
+      new AppError('Please verify your email to access this resource.', 403),
+    );
+  }
+  next();
+});
+
+exports.verifyEmail = catchAsync(async (req, res, next) => {
+  const { token } = req.query;
+  console.log(token);
+  if (!token) {
+    return next(new AppError('Token is missing!', 400));
+  }
+  // Verify the token
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (err) {
+    return next(new AppError('Invalid or expired token!', 400));
+  }
+
+  // Update the user's verification status
+  const user = await User.findByIdAndUpdate(decoded.id, { isVerified: true });
+
+  if (!user) {
+    return next(new AppError('User not found!', 404));
+  }
+
+  req.user = user;
+  next();
+  // createSendToken(user, 201, res);
+});
+
 exports.signup = catchAsync(async (req, res) => {
   const newUser = await User.create({
     name: req.body.name,
@@ -46,10 +91,20 @@ exports.signup = catchAsync(async (req, res) => {
     // passwordChangedAt: req.body.passwordChangedAt,
   });
 
-  const url = `${req.protocol}://${req.get('host')}/me`;
+  // const url = `${req.protocol}://${req.get('host')}/me`;
+  // `${process.env.FRONTEND_URL}/verify-email?token=${token}`
 
-  await new Email(newUser, url).sendWelcome();
-  createSendToken(newUser, 201, res);
+  const token = signToken(newUser._id);
+  const url = `${req.protocol}://${req.get('host')}/verify-email?token=${token}`;
+  // console.log(token);
+  // await sendVerificationEmail(newUser.email, token);
+  await new Email(newUser, url).sendVerfication();
+
+  res.status(201).json({
+    status: 'success',
+    message: 'User created! Please verify your email.',
+  });
+  // createSendToken(newUser, 201, res);
 });
 
 exports.login = catchAsync(async (req, res, next) => {

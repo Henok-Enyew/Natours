@@ -5,6 +5,7 @@ import { login, logout } from './login.js';
 import { signup } from './signup.js';
 import { updateSettings } from './updateSettings.js';
 import { bookTour } from './chapa.js';
+// import { verifyEmail } from './verfiyEmail.js';
 
 // DOM ELEMENTS
 // const mapBox = document.getElementById('map');
@@ -14,12 +15,6 @@ const logOutBtn = document.querySelector('.nav__el--logout');
 const userDataForm = document.querySelector('.form-user-data');
 const userPasswordForm = document.querySelector('.form-user-password');
 const bookBtn = document.getElementById('book-tour');
-
-// DELEGATION
-// if (mapBox) {
-//   const locations = JSON.parse(mapBox.dataset.locations);
-//   displayMap(locations);
-// }
 
 if (signupForm)
   signupForm.addEventListener('submit', (e) => {

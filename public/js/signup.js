@@ -16,10 +16,13 @@ export const signup = async (name, email, password, passwordConfirm) => {
     });
     // console.log('data ' + res.data.status);
     if (res.data.status === 'success') {
-      showAlert('success', 'Account Created successfully!');
-      window.setTimeout(() => {
-        location.assign('/');
-      }, 1000);
+      showAlert(
+        'success',
+        'Account Created successfully! Checkout Your Email and Get Verified!',
+      );
+      // window.setTimeout(() => {
+      //   location.assign('/');
+      // }, 1000);
     }
   } catch (err) {
     showAlert('error', err.message);

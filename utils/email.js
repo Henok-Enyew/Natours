@@ -84,6 +84,12 @@ module.exports = class Email {
   async sendWelcome() {
     await this.send('welcome', 'Welcome to natours family!');
   }
+  async sendVerfication() {
+    await this.send(
+      'verification',
+      'Welcome to natours family! Please verfiy your email.',
+    );
+  }
   async sendPasswordReset() {
     await this.send(
       'passwordReset',
