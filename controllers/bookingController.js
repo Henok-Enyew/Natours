@@ -23,9 +23,9 @@ exports.getCheckoutSessionChapa = catchAsync(async (req, res, next) => {
       first_name: req.user.name.split(' ')[0],
       last_name: req.user.name.split(' ')[1],
       phone_number: '0904927815',
-      tx_ref: `tx-${Date.now()}`, // Unique transaction reference
-      callback_url: 'https://127.0.0.1:8035',
-      return_url: 'http://127.0.0.1:8035',
+      tx_ref: `tx-${Date.now()}`,
+      callback_url: `https://natours-sbd8.onrender.com`,
+      return_url: `https://natours-sbd8.onrender.com`,
       'customization[title]': 'Natours',
       'customization[description]': tour.summary,
     },
@@ -62,7 +62,7 @@ exports.getCheckoutSession = catchAsync(async (req, res, next) => {
             description: tour.summary,
             images: ['https://natours.dev/img/tours/tour-1-cover.jpg'],
           },
-          unit_amount: tour.price * 100, // Amount in cents
+          unit_amount: tour.price * 100,
         },
         quantity: 1,
       },
